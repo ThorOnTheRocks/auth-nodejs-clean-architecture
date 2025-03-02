@@ -1,3 +1,4 @@
+import { UserMapper } from './../mappers/user.mapper';
 import { BcryptAdapter } from "../../config";
 import { UserModel } from "../../data/mongodb";
 import { AuthDataSource, CustomError, RegisterUserDTO, UserEntity } from "../../domain";
@@ -24,13 +25,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
           password: this.hashPassword(password),
         })
 
-        return new UserEntity(
-          user.id,
-          user.name,
-          user.email,
-          user.password,
-          user.roles
-        )
+        await user.save();
+
+        return UserMapper.userEntityFromObject(user);
 
       } catch (error) {
         if(error instanceof CustomError) {
