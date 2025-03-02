@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { AuthRepository, CustomError, RegisterUserDTO } from "../../domain/index"
 import { JWTAdapter } from "../../config";
+import { UserModel } from "../../data/mongodb";
 
 export class AuthController {
   constructor (
@@ -33,5 +34,11 @@ export class AuthController {
 
   loginUser = (req: Request, res: Response) => {
     res.json("Controller user login")
+  }
+
+  getUsers = (req: Request, res: Response) => {
+    UserModel.find()
+    .then(users => res.json(users))
+    .catch(() => res.status(500).json({error: 'Internal server error'}))
   }
 }
