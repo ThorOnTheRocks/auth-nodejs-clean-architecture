@@ -1,18 +1,7 @@
-import { JWTExpiration } from "../../config";
 import { RegisterUserDTO } from "../dtos/auth/register-user.dto";
 import { CustomError } from "../errors/errors";
 import { AuthRepository } from "../repository/auth.repository";
-
-interface UserToken {
-  token: string,
-  user: {
-    id: string,
-    name: string,
-    email: string
-  }
-}
-
-type SignToken = (payload: Object, duration: JWTExpiration) => Promise<string | null>
+import { SignToken, UserToken } from "./types";
 
 interface RegisterUserUseCase {
   execute(registerUser: RegisterUserDTO): Promise<UserToken>
