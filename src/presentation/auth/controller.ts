@@ -1,11 +1,11 @@
 import { Request, Response } from "express"
-import { AuthRepository, CustomError, RegisterUserDTO } from "../../domain/index"
+import { AuthRepository, CustomError, RegisterUser, RegisterUserDTO } from "../../domain/index"
 import { JWTAdapter } from "../../config";
 import { UserModel } from "../../data/mongodb";
 
 export class AuthController {
   constructor (
-    private readonly authRepository: AuthRepository
+    private readonly authRepository: AuthRepository,
   ) {}
 
   private handleError = (error: unknown, res: Response) => {
@@ -20,15 +20,9 @@ export class AuthController {
     const [error, registerUserDTO] = RegisterUserDTO.create(req.body);
     if (error) res.status(400).json({ error });
 
-    this.authRepository.register(registerUserDTO!)
-    .then(async user => {
-      res.json({
-        user,
-        token: await JWTAdapter.generateToken({
-          id: user.id
-        })
-      })
-    })
+    new RegisterUser(this.authRepository, JWTAdapter.generateToken)
+    .execute(registerUserDTO!)
+    .then(data => res.json(data))
     .catch(error => this.handleError(error, res))
   };
 
@@ -39,8 +33,7 @@ export class AuthController {
   getUsers = (req: Request, res: Response) => {
     UserModel.find()
     .then(users => res.json({
-      // users,
-      user: req.body.user
+      users,
     }))
     .catch(() => res.status(500).json({error: 'Internal server error'}))
   }

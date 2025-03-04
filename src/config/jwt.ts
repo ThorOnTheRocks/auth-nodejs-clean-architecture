@@ -3,7 +3,7 @@ import { envs } from './envs';
 
 const JWT_SEED = envs.JWT_SECRET;
 
-type JWTExpiration =
+export type JWTExpiration =
   | `${number}s`
   | `${number}m`
   | `${number}h`
