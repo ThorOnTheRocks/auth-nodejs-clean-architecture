@@ -26,7 +26,7 @@ export class PostgresDatabase {
         database,
         entities: [User],
         synchronize: true,
-        logging: true,  
+        logging: true,
       })
 
       await this.appDataSource.initialize();

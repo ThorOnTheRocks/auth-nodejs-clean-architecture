@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongo-db:
+    image: mongo:6.0.6
+    container_name: mongo-auth-api-prod
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo-user
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo_data_prod:/data/db
+    # No port exposure in production for security
+
+  # PostgreSQL Service
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-auth-api-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    # No port exposure in production for security
+
+  # Your Node.js application (production mode)
+  auth-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-api-prod
+    restart: always
+    depends_on:
+      - mongo-db
+      - postgres-db
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "${PORT}:${PORT}"
+
+volumes:
+  mongo_data_prod:
+  postgres_data_prod:

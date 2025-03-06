@@ -2,8 +2,9 @@ import { LoginUserDTO } from './../../domain/dtos/auth/login-user.dto';
 import { Request, Response } from "express"
 import { AuthRepository, CustomError, RegisterUser, RegisterUserDTO } from "../../domain/index"
 import { JWTAdapter } from "../../config";
-import { UserModel } from "../../data/mongodb";
 import { LoginUser } from '../../domain/use-cases/login-user-use-case';
+import { PostgresDatabase } from "../../data/postgres/postgres.database";
+import { User } from "../../data/postgres/models/user.model";
 
 export class AuthController {
   constructor (
@@ -36,11 +37,12 @@ export class AuthController {
     .execute(loginUserDTO!)
     .then(data => res.json(data))
     .catch(error => this.handleError(error, res))
-
   }
 
   getUsers = (req: Request, res: Response) => {
-    UserModel.find()
+    const userRepository = PostgresDatabase.appDataSource.getRepository(User);
+    
+    userRepository.find()
     .then(users => res.json({
       users,
     }))

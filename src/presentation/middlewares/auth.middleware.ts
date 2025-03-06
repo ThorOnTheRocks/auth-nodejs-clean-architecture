@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { JWTAdapter } from "../../config";
-import { UserModel } from "../../data/mongodb";
-
+import { PostgresDatabase } from "../../data/postgres/postgres.database";
+import { User } from "../../data/postgres/models/user.model";
 
 export class AuthMiddleware {
   
   static validateJWT = async (req: Request, res: Response, next: NextFunction): Promise<void>  => {
-
     const authorization = req.header('Authorization');
     if(!authorization) {
       res.status(401).json({error: 'No token provided'})
@@ -20,16 +19,17 @@ export class AuthMiddleware {
     const token = authorization.split(' ').at(1) || '';
 
     try {
-
       const payload = await JWTAdapter.validateToken<{id: string}>(token);
       if(!payload) {
         res.status(401).json({error: 'Invalid token'});
         return;
       };
 
-      const user = await UserModel.findById(payload.id);
+      const userRepository = PostgresDatabase.appDataSource.getRepository(User);
+      const user = await userRepository.findOne({ where: { id: parseInt(payload.id) } });
+      
       if(!user) {
-        res.status(401).json({error: 'User does not exists'});
+        res.status(401).json({error: 'User does not exist'});
         return;
       };
 

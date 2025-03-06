@@ -12,6 +12,7 @@ export const envs = {
   POSTGRES_PASSWORD: get('POSTGRES_PASSWORD').required().asString(),
   POSTGRES_USER: get('POSTGRES_USER').required().asString(),
   POSTGRES_DB: get('POSTGRES_DB').required().asString(),
-  POSTGRES_LOCAL_PORT: get('POSTGRES_LOCAL_PORT').required().asInt()
+  POSTGRES_LOCAL_PORT: get('POSTGRES_LOCAL_PORT').required().asInt(),
+  POSTGRES_HOST: get('POSTGRES_HOST').required().asString
 }
 
