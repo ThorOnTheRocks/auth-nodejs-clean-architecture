@@ -1,7 +1,7 @@
 import { User } from "../../data/postgres/models/user.model";
 import { CustomError, UserEntity } from "../../domain";
 
-export class UserMapper {
+export class PostgresUserMapper {
 
   static toEntity(postgresUser: User): UserEntity {
     const { name, email, password, roles, img } = postgresUser;

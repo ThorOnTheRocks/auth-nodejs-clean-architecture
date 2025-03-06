@@ -1,4 +1,4 @@
-import { UserMapper } from './../mappers/user.mapper';
+import { PostgresUserMapper } from '../mappers/postgres-user.mapper';
 import { BcryptAdapter } from "../../config";
 import { AuthDataSource, CustomError, RegisterUserDTO, UserEntity } from "../../domain";
 import { LoginUserDTO } from '../../domain/dtos/auth/login-user.dto';
@@ -8,6 +8,7 @@ import { User } from '../../data/postgres/models/user.model';
 
 type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashedPassword: string) => boolean;
+
 export class PostgresAuthDataSourceImpl implements AuthDataSource {
   private readonly userRepository: Repository<User>
   constructor(
@@ -34,7 +35,7 @@ export class PostgresAuthDataSourceImpl implements AuthDataSource {
 
         const savedUser = await this.userRepository.save(user);
 
-        return UserMapper.toEntity(savedUser);
+        return PostgresUserMapper.toEntity(savedUser);
 
       } catch (error) {
         if(error instanceof CustomError) {
@@ -54,7 +55,7 @@ export class PostgresAuthDataSourceImpl implements AuthDataSource {
         const isMatching = await this.comparePassword(password, user.password)
         if(!isMatching) throw CustomError.badRequest('Wrong Password!');
 
-        return UserMapper.toEntity(user)
+        return PostgresUserMapper.toEntity(user)
       } catch (error) {
         if(error instanceof CustomError) {
           throw error;

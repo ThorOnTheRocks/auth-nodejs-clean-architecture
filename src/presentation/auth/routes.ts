@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { AuthController } from "./controller";
-import { PostgresAuthDataSourceImpl, AuthRepositoryImpl } from "../../infrastructure";
+import { AuthRepositoryImpl } from "../../infrastructure";
 import { AuthMiddleware } from "../middlewares/auth.middleware";
-
+import { DatabaseFactory } from "../../infrastructure/factories/database.factory";
+import { envs } from "../../config";
 export class AuthRoutes {
   static get routes(): Router {
     const router = Router();
 
-    const authDataSource = new PostgresAuthDataSourceImpl();
+    const authDataSource = DatabaseFactory.createAuthDataSource(envs.DATABASE_TYPE);
     const authRepository = new AuthRepositoryImpl(authDataSource);
 
     const controller = new AuthController(authRepository);

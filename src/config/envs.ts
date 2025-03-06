@@ -13,6 +13,7 @@ export const envs = {
   POSTGRES_USER: get('POSTGRES_USER').required().asString(),
   POSTGRES_DB: get('POSTGRES_DB').required().asString(),
   POSTGRES_LOCAL_PORT: get('POSTGRES_LOCAL_PORT').required().asInt(),
-  POSTGRES_HOST: get('POSTGRES_HOST').required().asString
+  POSTGRES_HOST: get('POSTGRES_HOST').required().asString,
+  DATABASE_TYPE: get('DATABASE_TYPE').default('postgres').asEnum(['postgres', 'mongodb']),
 }
 

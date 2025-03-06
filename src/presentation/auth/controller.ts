@@ -1,10 +1,11 @@
 import { LoginUserDTO } from './../../domain/dtos/auth/login-user.dto';
 import { Request, Response } from "express"
 import { AuthRepository, CustomError, RegisterUser, RegisterUserDTO } from "../../domain/index"
-import { JWTAdapter } from "../../config";
+import { envs, JWTAdapter } from "../../config";
 import { LoginUser } from '../../domain/use-cases/login-user-use-case';
 import { PostgresDatabase } from "../../data/postgres/postgres.database";
 import { User } from "../../data/postgres/models/user.model";
+import { UserModel } from '../../data/mongodb';
 
 export class AuthController {
   constructor (
@@ -40,12 +41,21 @@ export class AuthController {
   }
 
   getUsers = (req: Request, res: Response) => {
-    const userRepository = PostgresDatabase.appDataSource.getRepository(User);
-    
-    userRepository.find()
-    .then(users => res.json({
-      users,
-    }))
-    .catch(() => res.status(500).json({error: 'Internal server error'}))
+    if (envs.DATABASE_TYPE === 'postgres') {
+      const userRepository = PostgresDatabase.appDataSource.getRepository(User);
+      
+      userRepository.find()
+      .then(users => res.json({
+        users,
+      }))
+      
+      .catch(() => res.status(500).json({error: 'Internal server error'}));
+    } else {
+      UserModel.find()
+      .then(users => res.json({
+        users,
+      }))
+      .catch(() => res.status(500).json({error: 'Internal server error'}));
+    }
   }
 }

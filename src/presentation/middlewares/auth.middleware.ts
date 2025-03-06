@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { JWTAdapter } from "../../config";
+import { envs, JWTAdapter } from "../../config";
 import { PostgresDatabase } from "../../data/postgres/postgres.database";
 import { User } from "../../data/postgres/models/user.model";
+import { UserModel } from "../../data/mongodb";
 
 export class AuthMiddleware {
   
@@ -25,8 +26,14 @@ export class AuthMiddleware {
         return;
       };
 
-      const userRepository = PostgresDatabase.appDataSource.getRepository(User);
-      const user = await userRepository.findOne({ where: { id: payload.id } });
+      let user;
+      
+      if (envs.DATABASE_TYPE === 'postgres') {
+        const userRepository = PostgresDatabase.appDataSource.getRepository(User);
+        user = await userRepository.findOne({ where: { id: payload.id } });
+      } else {
+        user = await UserModel.findById(payload.id);
+      }
       
       if(!user) {
         res.status(401).json({error: 'User does not exist'});

@@ -42,6 +42,7 @@ services:
       - .env.development
     environment:
       - NODE_ENV=development
+      - DATABASE_TYPE=${DATABASE_TYPE:-postgres}
     volumes:
       - ./src:/app/src  # For hot reloading
     ports:
