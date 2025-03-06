@@ -26,7 +26,7 @@ export class AuthMiddleware {
       };
 
       const userRepository = PostgresDatabase.appDataSource.getRepository(User);
-      const user = await userRepository.findOne({ where: { id: parseInt(payload.id) } });
+      const user = await userRepository.findOne({ where: { id: payload.id } });
       
       if(!user) {
         res.status(401).json({error: 'User does not exist'});
