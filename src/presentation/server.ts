@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import http from 'http';
+import { CookieAdapter } from '../config/cookie';
 
 interface Options {
   port: number
@@ -22,6 +23,7 @@ export class Server {
 
     this.app.use(express.json())
     this.app.use(express.urlencoded({extended: true}))
+    this.app.use(CookieAdapter.parseCookie());
     this.app.use(this.routes)
 
     this.server = this.app.listen(this.port, () => {
