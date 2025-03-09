@@ -22,7 +22,10 @@ export class AuthController {
 
   registerUser = (req: Request, res: Response) => {
     const [error, registerUserDTO] = RegisterUserDTO.create(req.body);
-    if (error) res.status(400).json({ error });
+    if (error) {
+      res.status(400).json({ error })
+      return;
+    };
 
     new RegisterUser(this.authRepository, JWTAdapter.generateToken)
     .execute(registerUserDTO!)
@@ -32,8 +35,10 @@ export class AuthController {
 
   loginUser = (req: Request, res: Response) => {
     const [error, loginUserDTO] = LoginUserDTO.create(req.body);
-    if (error) res.status(400).json({ error });
-
+    if (error) {
+      res.status(400).json({ error })
+      return;
+    };
     new LoginUser(this.authRepository, JWTAdapter.generateToken)
     .execute(loginUserDTO!)
     .then(data => res.json(data))
