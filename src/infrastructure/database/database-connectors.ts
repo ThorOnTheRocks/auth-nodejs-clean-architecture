@@ -13,7 +13,7 @@ export const databaseConnectors: Record<string, DatabaseConnector> = {
         username: envs.POSTGRES_USER,
         password: envs.POSTGRES_PASSWORD,
         database: envs.POSTGRES_DB,
-        host: 'postgres-db',
+        host: envs.POSTGRES_HOST,
         port: envs.POSTGRES_LOCAL_PORT
       });
     }

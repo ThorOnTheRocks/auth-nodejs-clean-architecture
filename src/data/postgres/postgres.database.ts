@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { User } from "./models/user.model";
+import { envs } from "../../config";
 
 interface Options {
   host: string;
