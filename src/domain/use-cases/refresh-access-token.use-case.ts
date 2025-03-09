@@ -1,3 +1,4 @@
+import { JWTExpiration } from "../../config";
 import { CustomError } from "../errors/errors";
 import { RefreshTokenRepository } from "../repository/refresh-token.repository";
 import { UserRepository } from "../repository/user.repository";
@@ -11,7 +12,7 @@ export class RefreshAccessToken implements RefreshAccessTokenUseCase {
   constructor(
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly userRepository: UserRepository,
-    private readonly signToken: (payload: Object, duration: string) => Promise<string | null>
+    private readonly signToken: (payload: Object, duration?: JWTExpiration) => Promise<string | null>
   ) {}
 
   async execute(refreshToken: string): Promise<UserToken> {

@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { User } from "./models/user.model";
-import { envs } from "../../config";
+import { RefreshToken } from "./models/refreshToken.model";
 
 interface Options {
   host: string;
@@ -25,7 +25,7 @@ export class PostgresDatabase {
         username,
         password,
         database,
-        entities: [User],
+        entities: [User, RefreshToken],
         synchronize: true,
         logging: true,
       })

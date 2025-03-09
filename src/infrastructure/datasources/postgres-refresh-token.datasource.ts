@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { RefreshToken } from "../../data/postgres/models/refreshToken.model";
 import { CustomError, RefreshTokenDataSource } from "../../domain";
 import { RefreshTokenEntity } from "../../domain/entities/refreshToken.entity";
@@ -39,20 +39,71 @@ export class PostgresRefreshTokenDataSourceImpl implements RefreshTokenDataSourc
       throw CustomError.internalServerError('Failed to create refresh token');
     }
   }
-  findByToken(token: string): Promise<RefreshTokenEntity | null> {
-    throw new Error("Method not implemented.");
-  }
-  findAllByUserId(userId: string): Promise<RefreshTokenEntity[]> {
-    throw new Error("Method not implemented.");
-  }
-  revokeToken(id: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
-  }
-  revokeAllUserTokens(userId: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
-  }
-  removeExpiredTokens(): Promise<number> {
-    throw new Error("Method not implemented.");
+
+  async findByToken(token: string): Promise<RefreshTokenEntity | null> {
+    try {
+      const storedToken = await this.refreshTokenRepository.findOne({ where: { token } });
+
+      if(!storedToken) return null;
+
+      return PostgresRefreshTokenMapper.toEntity(storedToken);
+    } catch (error) {
+      console.error('Error finding refresh token:', error);
+      throw CustomError.internalServerError();
+    }
   }
 
+  async findAllByUserId(userId: string): Promise<RefreshTokenEntity[]> {
+    try {
+      const tokens = await this.refreshTokenRepository.find({ where: { userId } });
+
+      return tokens.map(token => PostgresRefreshTokenMapper.toEntity(token));
+    } catch (error) {
+      console.error('Error finding refresh tokens by user ID:', error);
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async revokeToken(id: string): Promise<boolean> {
+    try {
+      const result = await this.refreshTokenRepository.update(
+        id,
+        { isRevoked: true }
+      );
+      
+      return result.affected ? result.affected > 0 : false;
+    } catch (error) {
+      console.error('Error revoking token:', error);
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async revokeAllUserTokens(userId: string): Promise<boolean> {
+    try {
+      const result = await this.refreshTokenRepository.update(
+        { userId },
+        { isRevoked: true }
+      );
+      
+      return result.affected ? result.affected > 0 : false;
+    } catch (error) {
+      console.error('Error revoking tokens of user:', error);
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async removeExpiredTokens(): Promise<number> {
+    try {
+
+      const now = new Date();
+      const result = await this.refreshTokenRepository.delete({
+        expiresAt: LessThan(now)
+      })
+
+      return result.affected || 0;
+    } catch (error) {
+      console.error('Error removing expired tokens:', error);
+      throw CustomError.internalServerError();
+    }
+  }
 }
