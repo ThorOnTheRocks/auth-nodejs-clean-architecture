@@ -39,6 +39,7 @@ export class AuthController {
       res.status(400).json({ error })
       return;
     };
+
     new LoginUser(this.authRepository, JWTAdapter.generateToken)
     .execute(loginUserDTO!)
     .then(data => res.json(data))
