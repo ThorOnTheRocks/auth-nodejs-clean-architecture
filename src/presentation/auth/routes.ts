@@ -26,7 +26,7 @@ export class AuthRoutes {
     
     router.post('/refresh-token', controller.refreshToken);
     router.post('/logout', controller.logout);
-    router.post('logout-all', [AuthMiddleware.validateJWT], controller.logoutAll);
+    router.post('/logout-all', [AuthMiddleware.validateJWT], controller.logoutAll);
 
     router.get('/', [AuthMiddleware.validateJWT], controller.getUsers);
 
