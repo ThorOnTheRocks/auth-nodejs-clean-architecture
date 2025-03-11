@@ -1,4 +1,3 @@
-import { RefreshTokenEntity } from "../entities/refreshToken.entity";
 import { CustomError } from "../errors/errors";
 import { RefreshTokenRepository } from "../repository/refresh-token.repository";
 
