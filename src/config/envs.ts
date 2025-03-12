@@ -15,5 +15,11 @@ export const envs = {
   POSTGRES_LOCAL_PORT: get('POSTGRES_LOCAL_PORT').required().asInt(),
   POSTGRES_HOST: get('POSTGRES_HOST').required().asString(),
   DATABASE_TYPE: get('DATABASE_TYPE').default('postgres').asEnum(['postgres', 'mongodb']),
+  GOOGLE_CLIENT_ID: get('GOOGLE_CLIENT_ID').required().asString(),
+  GOOGLE_CLIENT_SECRET: get('GOOGLE_CLIENT_SECRET').required().asString(),
+  GOOGLE_CALLBACK_URL: get('GOOGLE_CALLBACK_URL').required().asString(),
+  GITHUB_CLIENT_ID: get('GITHUB_CLIENT_ID').required().asString(),
+  GITHUB_CLIENT_SECRET: get('GITHUB_CLIENT_SECRET').required().asString(),
+  GITHUB_CALLBACK_URL: get('GITHUB_CALLBACK_URL').required().asString(),
 }
 

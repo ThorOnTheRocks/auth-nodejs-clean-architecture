@@ -1,4 +1,4 @@
-type OauthProvider = "local" | "google" | "github"
+export type OauthProvider = "local" | "google" | "github"
 
 
 export class AuthMethodEntity {
