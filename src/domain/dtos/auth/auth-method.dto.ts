@@ -1,4 +1,7 @@
-import { AuthMethodEntity, OauthProvider } from "../../entities/authMethod.entity";
+import {
+  AuthMethodEntity,
+  OauthProvider,
+} from "../../entities/authMethod.entity";
 
 export class AuthMethodDTO {
   private constructor(
@@ -6,7 +9,7 @@ export class AuthMethodDTO {
     public userId: string,
     public provider: OauthProvider,
     public email?: string,
-    public metadata?: Record<string, any>
+    public metadata?: Record<string, any>,
   ) {}
 
   static create(entity: AuthMethodEntity): AuthMethodDTO {

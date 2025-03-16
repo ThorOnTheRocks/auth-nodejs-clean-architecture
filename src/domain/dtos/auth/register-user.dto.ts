@@ -7,15 +7,16 @@ export class RegisterUserDTO {
     public password: string,
   ) {}
 
-  static create(object: {[key: string]: any}): [string?, RegisterUserDTO?] {
-    const { name, email, password} = object;
+  static create(object: { [key: string]: any }): [string?, RegisterUserDTO?] {
+    const { name, email, password } = object;
 
-    if(!name) return ["Name is missing"]
-    if(!email) return ["Email is missing"]
-    if(!Validators.email.test(email)) return ["Email is invalid format"]
-    if(!password) return ["Password is missing"]
-    if(password.length < 6) return ["Password must be minimum of 6 characters"]
+    if (!name) return ["Name is missing"];
+    if (!email) return ["Email is missing"];
+    if (!Validators.email.test(email)) return ["Email is invalid format"];
+    if (!password) return ["Password is missing"];
+    if (password.length < 6)
+      return ["Password must be minimum of 6 characters"];
 
-    return [undefined, new RegisterUserDTO(name, email, password)]
+    return [undefined, new RegisterUserDTO(name, email, password)];
   }
 }

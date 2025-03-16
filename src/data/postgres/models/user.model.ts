@@ -3,25 +3,25 @@ import { Entity, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
 @Entity()
 @Unique(["email"])
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  @Column({nullable: false})
-  name!: string
+  @Column({ nullable: false })
+  name!: string;
 
   @Column({ unique: true, nullable: false })
   email!: string;
 
-  @Column({nullable: false})
-  password!: string
+  @Column({ nullable: false })
+  password!: string;
 
   @Column({ nullable: true })
-  img?: string
+  img?: string;
 
-  @Column({ 
-    type: "enum", 
-    enum: ["USER_ROLE", "ADMIN_ROLE"], 
-    default: "USER_ROLE"
+  @Column({
+    type: "enum",
+    enum: ["USER_ROLE", "ADMIN_ROLE"],
+    default: "USER_ROLE",
   })
-  roles!: string[]
+  roles!: string[];
 }

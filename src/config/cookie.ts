@@ -1,12 +1,11 @@
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 
 export class CookieParserAdapter {
   static parseCookie(secret?: string, options = {}) {
-
     const defaultOptions = {
-      decode: decodeURIComponent
+      decode: decodeURIComponent,
     };
 
-    return cookieParser(secret, {...defaultOptions, ...options})
+    return cookieParser(secret, { ...defaultOptions, ...options });
   }
 }

@@ -5,11 +5,10 @@ import { RefreshToken } from "./models/refreshToken.model";
 interface Options {
   host: string;
   port: number;
-  username: string,
+  username: string;
   password: string;
-  database: string
+  database: string;
 }
-
 
 export class PostgresDatabase {
   static appDataSource: DataSource;
@@ -19,7 +18,7 @@ export class PostgresDatabase {
 
     try {
       this.appDataSource = new DataSource({
-        type: 'postgres',
+        type: "postgres",
         host,
         port,
         username,
@@ -28,13 +27,13 @@ export class PostgresDatabase {
         entities: [User, RefreshToken],
         synchronize: true,
         logging: true,
-      })
+      });
 
       await this.appDataSource.initialize();
-      console.log('Postgres connected successfully!')
+      console.log("Postgres connected successfully!");
     } catch (error) {
-      console.error('Postgres connection error:', error);
-      throw error
+      console.error("Postgres connection error:", error);
+      throw error;
     }
   }
 }

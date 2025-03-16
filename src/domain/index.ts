@@ -11,4 +11,17 @@ import { GenerateRefreshToken } from "./use-cases/generate-refresh-token.use-cas
 import { RevokeRefreshToken } from "./use-cases/revoke-refresh-token.use-case";
 import { RevokeAllUserTokens } from "./use-cases/revoke-all-user-tokens.use-case";
 
-export {RefreshTokenDataSource, RefreshTokenRepository, CustomError, RegisterUserDTO, UserEntity, AuthDataSource, AuthRepository, RegisterUser, GenerateRefreshToken, RefreshAccessToken, RevokeRefreshToken, RevokeAllUserTokens}
+export {
+  RefreshTokenDataSource,
+  RefreshTokenRepository,
+  CustomError,
+  RegisterUserDTO,
+  UserEntity,
+  AuthDataSource,
+  AuthRepository,
+  RegisterUser,
+  GenerateRefreshToken,
+  RefreshAccessToken,
+  RevokeRefreshToken,
+  RevokeAllUserTokens,
+};

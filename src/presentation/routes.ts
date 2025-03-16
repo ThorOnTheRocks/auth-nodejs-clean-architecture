@@ -6,7 +6,7 @@ export class AppRoutes {
     const router = Router();
 
     // Define all your app routes
-    router.use('/api/auth', AuthRoutes.routes);
+    router.use("/api/auth", AuthRoutes.routes);
 
     return router;
   }

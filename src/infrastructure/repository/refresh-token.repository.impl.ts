@@ -3,10 +3,14 @@ import { RefreshTokenEntity } from "../../domain/entities/refreshToken.entity";
 
 export class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
   constructor(
-    private readonly refreshTokenDataSource: RefreshTokenDataSource
+    private readonly refreshTokenDataSource: RefreshTokenDataSource,
   ) {}
 
-  create(userId: string, userAgent?: string, ipAddress?: string): Promise<RefreshTokenEntity> {
+  create(
+    userId: string,
+    userAgent?: string,
+    ipAddress?: string,
+  ): Promise<RefreshTokenEntity> {
     return this.refreshTokenDataSource.create(userId, userAgent, ipAddress);
   }
   findByToken(token: string): Promise<RefreshTokenEntity | null> {
@@ -24,5 +28,4 @@ export class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
   removeExpiredTokens(): Promise<number> {
     return this.refreshTokenDataSource.removeExpiredTokens();
   }
-  
 }

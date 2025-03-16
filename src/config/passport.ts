@@ -36,11 +36,15 @@ export class PassportAdapter {
     return passport.session();
   }
 
-  static serializeUser(callback: (user: any, done: (err: any, id: any) => void) => void) {
+  static serializeUser(
+    callback: (user: any, done: (err: any, id: any) => void) => void,
+  ) {
     return passport.serializeUser(callback);
   }
 
-  static deserializeUser(callback: (id: any, done: (err: any, user: any) => void) => void) {
+  static deserializeUser(
+    callback: (id: any, done: (err: any, user: any) => void) => void,
+  ) {
     return passport.deserializeUser(callback);
   }
 
@@ -52,9 +56,17 @@ export class PassportAdapter {
     return passport.authenticate(strategy, options);
   }
 
-  static handleCallback(strategy: string, options: CallbackOptions = {}, callback?: (req: Request, res: Response, next: NextFunction) => void) {
+  static handleCallback(
+    strategy: string,
+    options: CallbackOptions = {},
+    callback?: (req: Request, res: Response, next: NextFunction) => void,
+  ) {
     if (callback) {
-      return passport.authenticate(strategy, { session: options.session }, callback);
+      return passport.authenticate(
+        strategy,
+        { session: options.session },
+        callback,
+      );
     }
     return passport.authenticate(strategy, options);
   }

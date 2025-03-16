@@ -5,21 +5,18 @@ interface Options {
   dbName: string;
 }
 
-
 export class MongoDatabase {
-
-
   static async connect(options: Options) {
     const { url, dbName } = options;
     try {
       await mongoose.connect(url, {
-        dbName: dbName
-      })
-      console.log('Mongo db connected successfully')
+        dbName: dbName,
+      });
+      console.log("Mongo db connected successfully");
       return true;
     } catch (error) {
       console.error(error);
-      throw error
+      throw error;
     }
   }
 }

@@ -1,5 +1,4 @@
-export type OauthProvider = "local" | "google" | "github"
-
+export type OauthProvider = "local" | "google" | "github";
 
 export class AuthMethodEntity {
   constructor(
@@ -7,7 +6,6 @@ export class AuthMethodEntity {
     public userId: string,
     public provider: OauthProvider,
     public email?: string,
-    public metadata?: Record<string, any>
+    public metadata?: Record<string, any>,
   ) {}
-
 }
