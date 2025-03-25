@@ -10,7 +10,7 @@ export class OAuthProfileMapper {
 
     const [error, profileDTO] = OauthProfileDTO.create({
       name: googleProfile.displayName || "Google User",
-      email: googleProfile.emails?.[0]?.value,
+      email: googleProfile.emails?.[0]?.value || "",
       oauthProvider: "google" as OauthProvider,
       providerId: googleProfile.id,
       picture: googleProfile.photos?.[0]?.value,
@@ -30,7 +30,7 @@ export class OAuthProfileMapper {
     const [error, profileDTO] = OauthProfileDTO.create({
       name:
         githubProfile.displayName || githubProfile.username || "GitHub User",
-      email: githubProfile.emails?.[0]?.value,
+      email: githubProfile.emails?.[0]?.value || "",
       oauthProvider: "github" as OauthProvider,
       providerId: githubProfile.id,
       picture: githubProfile.photos?.[0]?.value,

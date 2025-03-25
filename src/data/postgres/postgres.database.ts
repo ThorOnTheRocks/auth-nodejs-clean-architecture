@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { User } from "./models/user.model";
 import { RefreshToken } from "./models/refreshToken.model";
+import { AuthMethod } from "./models/authMethod.model";
 
 interface Options {
   host: string;
@@ -24,7 +25,7 @@ export class PostgresDatabase {
         username,
         password,
         database,
-        entities: [User, RefreshToken],
+        entities: [User, RefreshToken, AuthMethod],
         synchronize: true,
         logging: true,
       });

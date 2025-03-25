@@ -3,9 +3,11 @@ import {
   CustomError,
   RefreshTokenDataSource,
 } from "../../domain";
+import { OAuthDatasource } from "../../domain/datasources/oauth.datasource";
 import { UserDataSource } from "../../domain/datasources/user.datasource";
 import { MongoAuthDataSourceImpl } from "../datasources/mongo-auth.datasource.impl";
 import { PostgresAuthDataSourceImpl } from "../datasources/postgres-auth.datasources.impl";
+import { PostgresOAuthDatasourceImpl } from "../datasources/postgres-oauth.datasource.impl";
 import { PostgresRefreshTokenDataSourceImpl } from "../datasources/postgres-refresh-token.datasource";
 import { PostgresUserDataSourceImpl } from "../datasources/postgres-user.datasource.impl";
 
@@ -45,6 +47,17 @@ export class DatabaseFactory {
       default:
         throw CustomError.internalServerError(
           `Unsupported database type: ${type}`,
+        );
+    }
+  }
+
+  static createOAuthDataSource(type: DatabaseType): OAuthDatasource {
+    switch (type) {
+      case "postgres":
+        return new PostgresOAuthDatasourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for OAuth`,
         );
     }
   }
