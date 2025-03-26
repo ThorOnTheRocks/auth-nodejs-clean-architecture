@@ -25,4 +25,29 @@ export class PostgresUserDataSourceImpl implements UserDataSource {
       throw CustomError.internalServerError();
     }
   }
+
+  async updateUser(userEntity: UserEntity): Promise<UserEntity> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userEntity.id },
+      });
+
+      if (!user) {
+        throw CustomError.notFound("User not found");
+      }
+
+      user.name = userEntity.name;
+      user.email = userEntity.email;
+      user.img = userEntity.img;
+
+      const updatedUser = await this.userRepository.save(user);
+      return PostgresUserMapper.toEntity(updatedUser);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      console.error("Error updating user:", error);
+      throw CustomError.internalServerError();
+    }
+  }
 }

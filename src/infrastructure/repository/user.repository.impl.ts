@@ -8,4 +8,8 @@ export class UserRepositoryImpl implements UserRepository {
   findById(userId: string): Promise<UserEntity | null> {
     return this.userDataSource.findById(userId);
   }
+
+  updateUser(user: UserEntity): Promise<UserEntity> {
+    return this.userDataSource.updateUser(user);
+  }
 }

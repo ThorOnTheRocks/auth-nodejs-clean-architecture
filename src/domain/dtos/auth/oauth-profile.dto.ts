@@ -1,16 +1,26 @@
 import { OauthProvider } from "../../entities/authMethod.entity";
 
+interface OauthProfileInput {
+  name: string;
+  email: string;
+  oauthProvider: OauthProvider;
+  providerId: string;
+  picture?: string;
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export class OauthProfileDTO {
   private constructor(
     public name: string,
     public email: string,
     public oauthProvider: OauthProvider,
     public providerId: string,
-    public metadata?: string[],
     public picture?: string,
+    public metadata?: Record<string, unknown>,
   ) {}
 
-  static create(object: { [key: string]: any }): [string?, OauthProfileDTO?] {
+  static create(object: OauthProfileInput): [string?, OauthProfileDTO?] {
     const { name, email, oauthProvider, providerId, picture, metadata } =
       object;
 

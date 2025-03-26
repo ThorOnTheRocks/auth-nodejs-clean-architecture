@@ -4,13 +4,13 @@ import { UserEntity } from "../entities/user.entity";
 export abstract class OAuthDatasource {
   abstract findOrCreateByOAuth(
     provider: string,
-    profile: any,
+    profile: unknown,
   ): Promise<UserEntity>;
 
   abstract linkOAuthToUser(
     userId: string,
     provider: string,
-    profile: any,
+    profile: unknown,
   ): Promise<AuthMethodEntity>;
 
   abstract unlinkOAuthFromUser(

@@ -3,6 +3,7 @@ import http from "http";
 import { CookieParserAdapter } from "../config/cookie";
 import { envs } from "../config";
 import { PassportAdapter } from "../config/passport";
+import path from "path";
 
 interface Options {
   port: number;
@@ -26,6 +27,10 @@ export class Server {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(CookieParserAdapter.parseCookie(envs.JWT_SECRET));
     this.app.use(PassportAdapter.initialize());
+    this.app.use(
+      "/uploads",
+      express.static(path.join(process.cwd(), "uploads")),
+    );
 
     this.app.use(this.routes);
 
