@@ -3,15 +3,15 @@ import {
   CustomError,
   RefreshTokenDataSource,
 } from "../../domain";
-import { FileStorageDataSource } from "../../domain/datasources/file-storage.datasource";
-import { OAuthDatasource } from "../../domain/datasources/oauth.datasource";
-import { UserDataSource } from "../../domain/datasources/user.datasource";
-import { LocalFileStorageDataSource } from "../datasources/local-file-storage.datasource.impl";
-import { MongoAuthDataSourceImpl } from "../datasources/mongo-auth.datasource.impl";
-import { PostgresAuthDataSourceImpl } from "../datasources/postgres-auth.datasources.impl";
-import { PostgresOAuthDatasourceImpl } from "../datasources/postgres-oauth.datasource.impl";
-import { PostgresRefreshTokenDataSourceImpl } from "../datasources/postgres-refresh-token.datasource";
-import { PostgresUserDataSourceImpl } from "../datasources/postgres-user.datasource.impl";
+import { FileStorageDataSource } from "../../features/profile/domain/datasources/file-storage.datasource";
+import { OAuthDatasource } from "../../features/oauth/domain/datasources/oauth.datasource";
+import { UserDataSource } from "../../features/auth/domain/datasources/user.datasource";
+import { LocalFileStorageDataSource } from "../../features/profile/infrastructure/datasources/local-file-storage.datasource.impl";
+import { MongoAuthDataSourceImpl } from "../../features/auth/infrastructure/datasources/mongo-auth.datasource.impl";
+import { PostgresAuthDataSourceImpl } from "../../features/auth/infrastructure/datasources/postgres-auth.datasources.impl";
+import { PostgresOAuthDatasourceImpl } from "../../features/oauth/infrastructure/datasources/postgres-oauth.datasource.impl";
+import { PostgresRefreshTokenDataSourceImpl } from "../../features/token/infrastructure/datasources/postgres-refresh-token.datasource";
+import { PostgresUserDataSourceImpl } from "../../features/auth/infrastructure/datasources/postgres-user.datasource.impl";
 
 export type DatabaseType = "postgres" | "mongodb";
 

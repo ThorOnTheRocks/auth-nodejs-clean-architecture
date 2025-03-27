@@ -2,7 +2,7 @@ import { AppRoutes } from "./presentation/routes";
 import { Server } from "./presentation/server";
 import { envs } from "./config/envs";
 import "reflect-metadata";
-import { connectToDatabase } from "./infrastructure/database/database-connectors";
+import { connectToDatabase } from "./database/database-connectors";
 
 (() => {
   main();

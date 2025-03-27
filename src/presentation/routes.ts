@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { AuthRoutes } from "./auth/routes";
-import { OAuthRoutes } from "./oauth/routes";
-import { ProfileRoutes } from "./profile/routes";
+import { AuthRoutes } from "../features/auth/presentation/routes/auth.routes";
+import { OAuthRoutes } from "../features/oauth/presentation/routes/oauth.routes";
+import { ProfileRoutes } from "../features/profile/presentation/routes/profile.routes";
 
 export class AppRoutes {
   static get routes(): Router {
