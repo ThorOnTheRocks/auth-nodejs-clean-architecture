@@ -27,4 +27,7 @@ export const envs = {
       `http://localhost:${get("PORT").required().asPortNumber()}/uploads`,
     )
     .asString(),
+  RESEND_API_KEY: get("RESEND_API_KEY").required().asString(),
+  EMAIL_FROM: get("EMAIL_FROM").default("auth@yourdomain.com").asString(),
+  APP_URL: get("APP_URL").required().asString(),
 };
