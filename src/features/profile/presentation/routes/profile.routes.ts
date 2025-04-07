@@ -6,6 +6,9 @@ import { UserRepositoryImpl } from "../../../auth/infrastructure/repositories/us
 import { FileStorageRepositoryImpl } from "../../infrastructure/repositories/file-storage.repository.impl";
 import { envs } from "../../../../config/envs";
 import { MulterAdapter } from "../../../../config/multer";
+import { ResendEmailDataSourceImpl } from "../../../email/infrastructure/datasources/email.datasource.impl";
+import { EmailChangeTokenRepositoryImpl } from "../../infrastructure/repositories/email-change-token.repository.impl";
+import { EmailRepositoryImpl } from "../../../email/infrastructure/repositories/email.repository.impl";
 
 export class ProfileRoutes {
   static get routes(): Router {
@@ -16,16 +19,25 @@ export class ProfileRoutes {
       envs.DATABASE_TYPE,
     );
     const fileStorageDataSource = DatabaseFactory.createFileStorageDataSource();
+    const emailChangeTokenDataSource =
+      DatabaseFactory.createEmailChangeTokenDataSource(envs.DATABASE_TYPE);
+    const emailDataSource = new ResendEmailDataSourceImpl();
 
     const userRepository = new UserRepositoryImpl(userDataSource);
     const fileStorageRepository = new FileStorageRepositoryImpl(
       fileStorageDataSource,
     );
+    const emailChangeTokenRepository = new EmailChangeTokenRepositoryImpl(
+      emailChangeTokenDataSource,
+    );
+    const emailRepository = new EmailRepositoryImpl(emailDataSource);
 
     // Create controller
     const controller = new ProfileController(
       fileStorageRepository,
       userRepository,
+      emailChangeTokenRepository,
+      emailRepository,
     );
 
     // Configure image uploader middleware

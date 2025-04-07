@@ -18,8 +18,10 @@ export class RegisterUserDTO {
     if (!email) return ["Email is missing"];
     if (!Validators.email.test(email)) return ["Email is invalid format"];
     if (!password) return ["Password is missing"];
-    if (password.length < 6)
-      return ["Password must be minimum of 6 characters"];
+    const validation = Validators.validatePassword(password);
+    if (!validation.isValid) {
+      return [validation.error];
+    }
 
     return [undefined, new RegisterUserDTO(name, email, password)];
   }

@@ -12,6 +12,12 @@ import { PostgresAuthDataSourceImpl } from "../../features/auth/infrastructure/d
 import { PostgresOAuthDatasourceImpl } from "../../features/oauth/infrastructure/datasources/postgres-oauth.datasource.impl";
 import { PostgresRefreshTokenDataSourceImpl } from "../../features/token/infrastructure/datasources/postgres-refresh-token.datasource";
 import { PostgresUserDataSourceImpl } from "../../features/auth/infrastructure/datasources/postgres-user.datasource.impl";
+import { VerificationTokenDataSource } from "../../features/verification/domain/datasources/verification-token.datasource";
+import { PostgresVerificationTokenDataSourceImpl } from "../../features/verification/infrastructure/datasources/postgres-verification-token.datasource";
+import { PasswordResetTokenDataSource } from "../../features/password-reset/domain/datasources/password-reset-token.datasource";
+import { PostgresPasswordResetTokenDataSourceImpl } from "../../features/password-reset/infrastructure/datasources/postgres-password-reset-token.datasource.impl";
+import { EmailChangeTokenDataSource } from "../../features/profile/domain/datasources/email-change-token.datasource";
+import { PostgresEmailChangeTokenDataSourceImpl } from "../../features/profile/infrastructure/datasources/postgres-email-change-token.datasource.impl";
 
 export type DatabaseType = "postgres" | "mongodb";
 
@@ -66,5 +72,44 @@ export class DatabaseFactory {
 
   static createFileStorageDataSource(): FileStorageDataSource {
     return new LocalFileStorageDataSource();
+  }
+
+  static createVerificationTokenDataSource(
+    type: DatabaseType,
+  ): VerificationTokenDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresVerificationTokenDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for verification tokens`,
+        );
+    }
+  }
+
+  static createPasswordResetTokenDataSource(
+    type: DatabaseType,
+  ): PasswordResetTokenDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresPasswordResetTokenDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for password reset tokens`,
+        );
+    }
+  }
+
+  static createEmailChangeTokenDataSource(
+    type: DatabaseType,
+  ): EmailChangeTokenDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresEmailChangeTokenDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for email change tokens`,
+        );
+    }
   }
 }

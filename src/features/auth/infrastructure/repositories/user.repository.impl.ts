@@ -12,4 +12,8 @@ export class UserRepositoryImpl implements UserRepository {
   updateUser(user: UserEntity): Promise<UserEntity> {
     return this.userDataSource.updateUser(user);
   }
+
+  findByEmail(email: string): Promise<UserEntity[]> {
+    return this.userDataSource.findByEmail(email);
+  }
 }

@@ -2,6 +2,9 @@ import { DataSource } from "typeorm";
 import { User } from "./models/user.model";
 import { RefreshToken } from "./models/refreshToken.model";
 import { AuthMethod } from "./models/authMethod.model";
+import { VerificationToken } from "./models/verificationToken.model";
+import { PasswordResetToken } from "./models/passwordResetToken.model";
+import { EmailChangeToken } from "./models/emailChangeToken.model";
 
 interface Options {
   host: string;
@@ -25,7 +28,14 @@ export class PostgresDatabase {
         username,
         password,
         database,
-        entities: [User, RefreshToken, AuthMethod],
+        entities: [
+          User,
+          RefreshToken,
+          AuthMethod,
+          VerificationToken,
+          PasswordResetToken,
+          EmailChangeToken,
+        ],
         synchronize: true,
         logging: true,
       });

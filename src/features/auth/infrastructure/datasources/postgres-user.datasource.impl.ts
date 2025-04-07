@@ -50,4 +50,17 @@ export class PostgresUserDataSourceImpl implements UserDataSource {
       throw CustomError.internalServerError();
     }
   }
+
+  async findByEmail(email: string): Promise<UserEntity[]> {
+    try {
+      const users = await this.userRepository.find({
+        where: { email },
+      });
+
+      return users.map((user) => PostgresUserMapper.toEntity(user));
+    } catch (error) {
+      console.error("Error finding users by email:", error);
+      throw CustomError.internalServerError();
+    }
+  }
 }
