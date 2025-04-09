@@ -10,6 +10,8 @@ import { LoginUserDTO } from "../../domain/dtos/login-user.dto";
 import { PostgresDatabase } from "../../../../database/postgres/postgres.database";
 import { Repository } from "typeorm";
 import { User } from "../../../../database/postgres/models/user.model";
+import { SecurityLoggerService } from "../../../../features/security/application/security-logger.service";
+import { SecurityEventType } from "../../../../features/security/domain/entities/security-event.entity";
 
 type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashedPassword: string) => boolean;
@@ -62,9 +64,33 @@ export class PostgresAuthDataSourceImpl implements AuthDataSource {
 
       return PostgresUserMapper.toEntity(user);
     } catch (error) {
+      if (error instanceof CustomError && error.message === "Wrong Password!") {
+        SecurityLoggerService.getInstance().logEvent(
+          null,
+          SecurityEventType.LOGIN_FAILURE,
+          null,
+          null,
+          { email, reason: "wrong_password" },
+        );
+      }
+
+      if (
+        error instanceof CustomError &&
+        error.message === "User does not exists"
+      ) {
+        SecurityLoggerService.getInstance().logEvent(
+          null,
+          SecurityEventType.LOGIN_FAILURE,
+          null,
+          null,
+          { email, reason: "user_not_found" },
+        );
+      }
+
       if (error instanceof CustomError) {
         throw error;
       }
+
       throw CustomError.internalServerError();
     }
   }

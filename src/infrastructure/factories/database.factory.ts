@@ -18,6 +18,8 @@ import { PasswordResetTokenDataSource } from "../../features/password-reset/doma
 import { PostgresPasswordResetTokenDataSourceImpl } from "../../features/password-reset/infrastructure/datasources/postgres-password-reset-token.datasource.impl";
 import { EmailChangeTokenDataSource } from "../../features/profile/domain/datasources/email-change-token.datasource";
 import { PostgresEmailChangeTokenDataSourceImpl } from "../../features/profile/infrastructure/datasources/postgres-email-change-token.datasource.impl";
+import { SecurityEventDataSource } from "../../features/security/domain/datasources/security-event.datasource";
+import { PostgresSecurityEventDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-security-event.datasource.impl";
 
 export type DatabaseType = "postgres" | "mongodb";
 
@@ -109,6 +111,19 @@ export class DatabaseFactory {
       default:
         throw CustomError.internalServerError(
           `Unsupported database type: ${type} for email change tokens`,
+        );
+    }
+  }
+
+  static createSecurityEventDataSource(
+    type: DatabaseType,
+  ): SecurityEventDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresSecurityEventDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for security events`,
         );
     }
   }

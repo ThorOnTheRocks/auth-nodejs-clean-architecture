@@ -4,6 +4,7 @@ import { CookieParserAdapter } from "../config/cookie";
 import { envs } from "../config";
 import { PassportAdapter } from "../config/passport";
 import path from "path";
+import { SecurityContextMiddleware } from "../features/security/presentation/middlewares/security-context.middleware";
 
 interface Options {
   port: number;
@@ -33,6 +34,7 @@ export class Server {
     );
 
     this.app.use(this.routes);
+    this.app.use(SecurityContextMiddleware.captureContext);
 
     this.server = this.app.listen(this.port, () => {
       console.log(`Server is listening on http://localhost:${this.port}`);

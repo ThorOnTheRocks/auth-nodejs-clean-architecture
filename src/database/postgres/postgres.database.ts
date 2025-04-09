@@ -5,6 +5,7 @@ import { AuthMethod } from "./models/authMethod.model";
 import { VerificationToken } from "./models/verificationToken.model";
 import { PasswordResetToken } from "./models/passwordResetToken.model";
 import { EmailChangeToken } from "./models/emailChangeToken.model";
+import { SecurityEvent } from "./models/security-event.model";
 
 interface Options {
   host: string;
@@ -35,6 +36,7 @@ export class PostgresDatabase {
           VerificationToken,
           PasswordResetToken,
           EmailChangeToken,
+          SecurityEvent,
         ],
         synchronize: true,
         logging: true,

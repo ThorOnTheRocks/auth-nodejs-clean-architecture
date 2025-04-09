@@ -22,6 +22,8 @@ import { EmailRepository } from "../../../email/domain/repositories/email.reposi
 import { VerificationTokenRepository } from "../../../verification/domain/repositories/verification-token.repository";
 import { ChangePasswordDTO } from "../../domain/dtos/change-password.dto";
 import { ChangePassword } from "../../domain/use-cases/change-password.use-case";
+import { SecurityLoggerService } from "../../../../features/security/application/security-logger.service";
+import { SecurityEventType } from "../../../../features/security/domain/entities/security-event.entity";
 
 export class AuthController {
   constructor(
@@ -72,6 +74,14 @@ export class AuthController {
                 console.error("Error sending verification email:", error),
               );
 
+            SecurityLoggerService.getInstance().logEvent(
+              data.user.id,
+              SecurityEventType.LOGIN_SUCCESS,
+              req.ip || null,
+              req.headers["user-agent"] || null,
+              { action: "registration", isFirstLogin: true },
+            );
+
             return res.json({
               ...data,
               verificationEmailSent: true,
@@ -100,6 +110,15 @@ export class AuthController {
               sameSite: "strict",
               maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
+
+            SecurityLoggerService.getInstance().logEvent(
+              data.user.id,
+              SecurityEventType.LOGIN_SUCCESS,
+              req.ip || null,
+              req.headers["user-agent"] || null,
+              { action: "login" },
+            );
+
             return res.json(data);
           });
       })
@@ -161,6 +180,14 @@ export class AuthController {
       .then(() => {
         res.clearCookie("refresh_token");
         res.json({ message: "Logged out successfully" });
+
+        SecurityLoggerService.getInstance().logEvent(
+          req.body.user.id,
+          SecurityEventType.TOKEN_REVOKED,
+          req.ip || null,
+          req.headers["user-agent"] || null,
+          { action: "logout" },
+        );
       })
       .catch((error) => this.handleError(error, res));
   };
@@ -173,6 +200,14 @@ export class AuthController {
       .then(() => {
         res.clearCookie("refresh_token");
         res.json({ message: "Logged out from all devices" });
+
+        SecurityLoggerService.getInstance().logEvent(
+          req.body.user.id,
+          SecurityEventType.TOKEN_REVOKED,
+          req.ip || null,
+          req.headers["user-agent"] || null,
+          { action: "logout_all_devices" },
+        );
       })
       .catch((error) => this.handleError(error, res));
   };
@@ -198,6 +233,14 @@ export class AuthController {
         success: true,
         message: "Password has been changed successfully",
       });
+
+      SecurityLoggerService.getInstance().logEvent(
+        userId,
+        SecurityEventType.PASSWORD_CHANGE,
+        req.ip || null,
+        req.headers["user-agent"] || null,
+        null,
+      );
     } catch (error) {
       this.handleError(error, res);
     }
