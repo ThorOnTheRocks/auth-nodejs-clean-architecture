@@ -63,4 +63,58 @@ export class PostgresUserDataSourceImpl implements UserDataSource {
       throw CustomError.internalServerError();
     }
   }
+
+  async lockAccount(
+    userId: string,
+    until: Date | null,
+    reason: string | null,
+  ): Promise<UserEntity> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw CustomError.notFound("User not found");
+      }
+
+      user.isLocked = true;
+      user.lockedUntil = until;
+      user.lockReason = reason;
+
+      const updatedUser = await this.userRepository.save(user);
+      return PostgresUserMapper.toEntity(updatedUser);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      console.error("Error locking user account:", error);
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async unlockAccount(userId: string): Promise<UserEntity> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw CustomError.notFound("User not found");
+      }
+
+      user.isLocked = false;
+      user.lockedUntil = null;
+      user.lockReason = null;
+
+      const updatedUser = await this.userRepository.save(user);
+      return PostgresUserMapper.toEntity(updatedUser);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      console.error("Error unlocking user account:", error);
+      throw CustomError.internalServerError();
+    }
+  }
 }

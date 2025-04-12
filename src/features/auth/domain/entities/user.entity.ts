@@ -7,5 +7,8 @@ export class UserEntity {
     public role: string[],
     public isVerified: boolean = false,
     public img?: string,
+    public isLocked: boolean = false,
+    public lockedUntil: Date | null = null,
+    public lockReason: string | null = null,
   ) {}
 }

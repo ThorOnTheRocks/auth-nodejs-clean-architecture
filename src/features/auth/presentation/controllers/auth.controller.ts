@@ -24,6 +24,7 @@ import { ChangePasswordDTO } from "../../domain/dtos/change-password.dto";
 import { ChangePassword } from "../../domain/use-cases/change-password.use-case";
 import { SecurityLoggerService } from "../../../../features/security/application/security-logger.service";
 import { SecurityEventType } from "../../../../features/security/domain/entities/security-event.entity";
+import { BruteForceProtectionService } from "../../../security/application/brute-force-protection.service";
 
 export class AuthController {
   constructor(
@@ -91,38 +92,78 @@ export class AuthController {
       .catch((error) => this.handleError(error, res));
   };
 
-  loginUser = (req: Request, res: Response) => {
-    const [error, loginUserDTO] = LoginUserDTO.create(req.body);
-    if (error) {
-      res.status(400).json({ error });
-      return;
+  loginUser = async (req: Request, res: Response) => {
+    try {
+      const [error, loginUserDTO] = LoginUserDTO.create(req.body);
+      if (error) {
+        res.status(400).json({ error });
+        return;
+      }
+
+      // Check for brute force attempts before even trying to authenticate
+      await BruteForceProtectionService.getInstance().check(
+        loginUserDTO!.email,
+        req.ip || null,
+      );
+
+      const data = await new LoginUser(
+        this.authRepository,
+        JWTAdapter.generateToken,
+      ).execute(loginUserDTO!);
+
+      const refreshToken = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+      ).execute(data.user.id, req.headers["user-agent"], req.ip);
+
+      await BruteForceProtectionService.getInstance().recordSuccess(
+        loginUserDTO!.email,
+        data.user.id,
+        req.ip || null,
+        req.headers["user-agent"] || null,
+      );
+
+      // Record successful login
+      await BruteForceProtectionService.getInstance().recordSuccess(
+        loginUserDTO!.email,
+        data.user.id,
+        req.ip || null,
+        req.headers["user-agent"] || null,
+      );
+
+      SecurityLoggerService.getInstance().logEvent(
+        data.user.id,
+        SecurityEventType.LOGIN_SUCCESS,
+        req.ip || null,
+        req.headers["user-agent"] || null,
+        { action: "login" },
+      );
+
+      res.cookie("refresh_token", refreshToken.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      res.json(data);
+    } catch (error) {
+      if (
+        error instanceof CustomError &&
+        (error.statusCode === 400 || error.statusCode === 401)
+      ) {
+        // Extract email from request if available
+        const email = req.body.email;
+        if (email) {
+          BruteForceProtectionService.getInstance().recordFailure(
+            email,
+            req.ip || null,
+            req.headers["user-agent"] || null,
+          );
+        }
+      }
+
+      this.handleError(error, res);
     }
-
-    new LoginUser(this.authRepository, JWTAdapter.generateToken)
-      .execute(loginUserDTO!)
-      .then((data) => {
-        return new GenerateRefreshToken(this.refreshTokenRepository)
-          .execute(data.user.id, req.headers["user-agent"], req.ip)
-          .then((refreshToken) => {
-            res.cookie("refresh_token", refreshToken.token, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-            });
-
-            SecurityLoggerService.getInstance().logEvent(
-              data.user.id,
-              SecurityEventType.LOGIN_SUCCESS,
-              req.ip || null,
-              req.headers["user-agent"] || null,
-              { action: "login" },
-            );
-
-            return res.json(data);
-          });
-      })
-      .catch((error) => this.handleError(error, res));
   };
 
   getUsers = (req: Request, res: Response) => {

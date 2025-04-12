@@ -12,6 +12,22 @@ const userSchema = new Schema({
     default: ["USER_ROLE"],
     enum: ["USER_ROLE", "ADMIN_ROLE"],
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  isLocked: {
+    type: Boolean,
+    default: false,
+  },
+  lockedUntil: {
+    type: Date,
+    default: null,
+  },
+  lockReason: {
+    type: String,
+    default: null,
+  },
 });
 
 export const UserModel = mongoose.model("User", userSchema);

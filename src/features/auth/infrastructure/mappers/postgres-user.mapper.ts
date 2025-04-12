@@ -3,7 +3,17 @@ import { CustomError, UserEntity } from "../../../../domain";
 
 export class PostgresUserMapper {
   static toEntity(postgresUser: User): UserEntity {
-    const { name, email, password, roles, img, isVerified } = postgresUser;
+    const {
+      name,
+      email,
+      password,
+      roles,
+      img,
+      isVerified,
+      isLocked,
+      lockedUntil,
+      lockReason,
+    } = postgresUser;
 
     if (!postgresUser.id) throw CustomError.badRequest("Missing id");
     if (!name) throw CustomError.badRequest("Missing user name");
@@ -19,6 +29,9 @@ export class PostgresUserMapper {
       roles,
       isVerified || false,
       img,
+      isLocked || false,
+      lockedUntil || null,
+      lockReason || null,
     );
   }
 }

@@ -22,6 +22,10 @@ export class CustomError extends Error {
     return new CustomError(404, message);
   }
 
+  static tooManyRequests(message: string = "Too many requests") {
+    return new CustomError(429, message);
+  }
+
   static internalServerError(message: string = "Internal Server Error") {
     return new CustomError(401, message);
   }

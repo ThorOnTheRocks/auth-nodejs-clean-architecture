@@ -44,6 +44,29 @@ export class AuthMiddleware {
         return;
       }
 
+      if (user.isLocked) {
+        if (user.lockedUntil && user.lockedUntil > new Date()) {
+          // Temporary lock is still active
+          res.status(403).json({
+            error: "Account locked",
+            message:
+              "Your account is temporarily locked. Please try again later or reset your password.",
+            lockedUntil: user.lockedUntil,
+          });
+          return;
+        } else if (!user.lockedUntil) {
+          // Permanent lock by admin
+          res.status(403).json({
+            error: "Account locked",
+            message:
+              "Your account has been locked. Please contact support for assistance.",
+          });
+          return;
+        }
+        // If we get here, the lock has expired but isLocked is still true
+        // We could auto-unlock here, but that might be better handled elsewhere
+      }
+
       req.body.user = user;
 
       next();

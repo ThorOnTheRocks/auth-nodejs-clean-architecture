@@ -20,6 +20,8 @@ import { EmailChangeTokenDataSource } from "../../features/profile/domain/dataso
 import { PostgresEmailChangeTokenDataSourceImpl } from "../../features/profile/infrastructure/datasources/postgres-email-change-token.datasource.impl";
 import { SecurityEventDataSource } from "../../features/security/domain/datasources/security-event.datasource";
 import { PostgresSecurityEventDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-security-event.datasource.impl";
+import { LoginAttemptDataSource } from "../../features/security/domain/datasources/login-attempt.datasource";
+import { PostgresLoginAttemptDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-login-attempt.datasource.impl";
 
 export type DatabaseType = "postgres" | "mongodb";
 
@@ -124,6 +126,19 @@ export class DatabaseFactory {
       default:
         throw CustomError.internalServerError(
           `Unsupported database type: ${type} for security events`,
+        );
+    }
+  }
+
+  static createLoginAttemptDataSource(
+    type: DatabaseType,
+  ): LoginAttemptDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresLoginAttemptDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for login attempts`,
         );
     }
   }

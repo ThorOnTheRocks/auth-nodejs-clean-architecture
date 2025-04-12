@@ -5,6 +5,7 @@ import { ProfileRoutes } from "../features/profile/presentation/routes/profile.r
 import { VerificationRoutes } from "../features/verification/presentation/routes/verification.routes";
 import { PasswordResetRoutes } from "../features/password-reset/presentation/routes/password-reset.routes";
 import { SecurityRoutes } from "../features/security/presentation/routes/security.routes";
+import { AdminSecurityRoutes } from "../features/security/presentation/routes/admin-security.routes";
 
 export class AppRoutes {
   static get routes(): Router {
@@ -17,6 +18,7 @@ export class AppRoutes {
     router.use("/api/verification", VerificationRoutes.routes);
     router.use("/api/password-reset", PasswordResetRoutes.routes);
     router.use("/api/security", SecurityRoutes.routes);
+    router.use("/api/admin/security", AdminSecurityRoutes.routes);
 
     return router;
   }

@@ -16,4 +16,16 @@ export class UserRepositoryImpl implements UserRepository {
   findByEmail(email: string): Promise<UserEntity[]> {
     return this.userDataSource.findByEmail(email);
   }
+
+  lockAccount(
+    userId: string,
+    until: Date | null,
+    reason: string | null,
+  ): Promise<UserEntity> {
+    return this.userDataSource.lockAccount(userId, until, reason);
+  }
+
+  unlockAccount(userId: string): Promise<UserEntity> {
+    return this.userDataSource.unlockAccount(userId);
+  }
 }

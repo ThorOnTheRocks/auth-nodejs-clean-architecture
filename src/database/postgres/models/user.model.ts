@@ -27,4 +27,13 @@ export class User {
     default: "USER_ROLE",
   })
   roles!: string[];
+
+  @Column({ default: false })
+  isLocked!: boolean;
+
+  @Column({ nullable: true, type: "timestamp" })
+  lockedUntil!: Date | null;
+
+  @Column({ nullable: true })
+  lockReason!: string | null;
 }
