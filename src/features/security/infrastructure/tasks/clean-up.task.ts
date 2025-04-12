@@ -13,8 +13,6 @@ export class SecurityCleanupTask {
       const removedAttempts =
         await this.loginAttemptRepository.clearOldAttempts(24 * 7);
 
-      // Keep security events for 90 days (if such a method exists)
-      // This would need to be implemented in the SecurityEventRepository
       const removedEvents = await this.securityEventRepository.clearOldEvents(
         24 * 90,
       );
