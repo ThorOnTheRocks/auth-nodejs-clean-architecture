@@ -20,4 +20,6 @@ export abstract class SecurityEventRepository {
     eventType: SecurityEventType,
     limit: number,
   ): Promise<SecurityEventEntity[]>;
+
+  abstract clearOldEvents(hours: number): Promise<number>;
 }

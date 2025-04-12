@@ -10,6 +10,7 @@ import { UnlinkOAuthAccount } from "../../domain/use-cases/unlink-account-use-ca
 import { LinkAccountDTO } from "../../domain/dtos/link-account.dto";
 import { RefreshTokenRepository } from "../../../token/domain/repositories/refresh-token.repository";
 import { GenerateRefreshToken } from "../../../token/domain/use-cases/generate-refresh-token.use-case";
+import { DeviceManagementService } from "../../../security/application/device-management.service";
 
 export class OAuthController {
   constructor(
@@ -26,7 +27,8 @@ export class OAuthController {
     res.status(500).json({ error: "Internal server error" });
   }
 
-  handleGoogleCallback = (req: Request, res: Response): void => {
+  // Example update for handleGoogleCallback:
+  handleGoogleCallback = async (req: Request, res: Response): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({ error: "Authentication failed" });
@@ -35,34 +37,40 @@ export class OAuthController {
 
       const profile = OAuthProfileMapper.fromGoogleProfile(req.user);
 
-      new OAuthAuthentication(this.oauthRepository, JWTAdapter.generateToken)
-        .execute("google", profile)
-        .then((data) => {
-          new GenerateRefreshToken(this.refreshTokenRepository)
-            .execute(
-              data.user.id,
-              req.headers["user-agent"] as string | undefined,
-              req.ip,
-            )
-            .then((refreshToken) => {
-              res.cookie("refresh_token", refreshToken.token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-              });
+      const data = await new OAuthAuthentication(
+        this.oauthRepository,
+        JWTAdapter.generateToken,
+      ).execute("google", profile);
 
-              res.redirect(`/auth-success?token=${data.token}`);
-            })
-            .catch((error) => this.handleError(error, res));
-        })
-        .catch((error) => this.handleError(error, res));
+      const refreshToken = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+      ).execute(
+        data.user.id,
+        req.headers["user-agent"] as string | undefined,
+        req.ip,
+      );
+
+      // Check for new device and send notification if needed
+      await DeviceManagementService.getInstance().checkDevice(
+        data.user.id,
+        req.headers["user-agent"] || null,
+        req.ip || null,
+      );
+
+      res.cookie("refresh_token", refreshToken.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      res.redirect(`/auth-success?token=${data.token}`);
     } catch (error) {
       this.handleError(error, res);
     }
   };
 
-  handleGithubCallback = (req: Request, res: Response): void => {
+  handleGithubCallback = async (req: Request, res: Response): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({ error: "Authentication failed" });
@@ -71,28 +79,34 @@ export class OAuthController {
 
       const profile = OAuthProfileMapper.fromGithubProfile(req.user);
 
-      new OAuthAuthentication(this.oauthRepository, JWTAdapter.generateToken)
-        .execute("github", profile)
-        .then((data) => {
-          new GenerateRefreshToken(this.refreshTokenRepository)
-            .execute(
-              data.user.id,
-              req.headers["user-agent"] as string | undefined,
-              req.ip,
-            )
-            .then((refreshToken) => {
-              res.cookie("refresh_token", refreshToken.token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-              });
+      const data = await new OAuthAuthentication(
+        this.oauthRepository,
+        JWTAdapter.generateToken,
+      ).execute("github", profile);
 
-              res.redirect(`/auth-success?token=${data.token}`);
-            })
-            .catch((error) => this.handleError(error, res));
-        })
-        .catch((error) => this.handleError(error, res));
+      const refreshToken = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+      ).execute(
+        data.user.id,
+        req.headers["user-agent"] as string | undefined,
+        req.ip,
+      );
+
+      // Check for new device and send notification if needed
+      await DeviceManagementService.getInstance().checkDevice(
+        data.user.id,
+        req.headers["user-agent"] || null,
+        req.ip || null,
+      );
+
+      res.cookie("refresh_token", refreshToken.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      res.redirect(`/auth-success?token=${data.token}`);
     } catch (error) {
       this.handleError(error, res);
     }

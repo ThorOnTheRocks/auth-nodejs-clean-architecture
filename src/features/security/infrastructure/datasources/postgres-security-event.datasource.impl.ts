@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { SecurityEvent } from "../../../../database/postgres/models/security-event.model";
 import { PostgresDatabase } from "../../../../database/postgres/postgres.database";
 import { SecurityEventDataSource } from "../../domain/datasources/security-event.datasource";
@@ -126,6 +126,21 @@ export class PostgresSecurityEventDataSourceImpl
       );
     } catch (error) {
       console.error("Error getting security events by type:", error);
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async clearOldEvents(hours: number): Promise<number> {
+    try {
+      const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
+
+      const result = await this.securityEventRepository.delete({
+        createdAt: LessThan(cutoffTime),
+      });
+
+      return result.affected || 0;
+    } catch (error) {
+      console.error("Error clearing old security events:", error);
       throw CustomError.internalServerError();
     }
   }

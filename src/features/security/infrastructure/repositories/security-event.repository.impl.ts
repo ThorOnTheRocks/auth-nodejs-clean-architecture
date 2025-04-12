@@ -40,4 +40,8 @@ export class SecurityEventRepositoryImpl implements SecurityEventRepository {
   ): Promise<SecurityEventEntity[]> {
     return this.securityEventDataSource.getEventsByType(eventType, limit);
   }
+
+  clearOldEvents(hours: number): Promise<number> {
+    return this.securityEventDataSource.clearOldEvents(hours);
+  }
 }

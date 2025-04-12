@@ -25,6 +25,7 @@ import { ChangePassword } from "../../domain/use-cases/change-password.use-case"
 import { SecurityLoggerService } from "../../../../features/security/application/security-logger.service";
 import { SecurityEventType } from "../../../../features/security/domain/entities/security-event.entity";
 import { BruteForceProtectionService } from "../../../security/application/brute-force-protection.service";
+import { DeviceManagementService } from "../../../security/application/device-management.service";
 
 export class AuthController {
   constructor(
@@ -43,53 +44,65 @@ export class AuthController {
     return res.status(500).json({ error: "Internal server error" });
   };
 
-  registerUser = (req: Request, res: Response) => {
-    const [error, registerUserDTO] = RegisterUserDTO.create(req.body);
-    if (error) {
-      res.status(400).json({ error });
-      return;
+  registerUser = async (req: Request, res: Response) => {
+    try {
+      const [error, registerUserDTO] = RegisterUserDTO.create(req.body);
+      if (error) {
+        res.status(400).json({ error });
+        return;
+      }
+
+      const data = await new RegisterUser(
+        this.authRepository,
+        JWTAdapter.generateToken,
+      ).execute(registerUserDTO!);
+
+      // Generate refresh token
+      const refreshToken = await new GenerateRefreshToken(
+        this.refreshTokenRepository,
+      ).execute(data.user.id, req.headers["user-agent"], req.ip);
+
+      res.cookie("refresh_token", refreshToken.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      // Register the first device (this won't send a notification since it's the first login)
+      await DeviceManagementService.getInstance().checkDevice(
+        data.user.id,
+        req.headers["user-agent"] || null,
+        req.ip || null,
+      );
+
+      // Send verification email
+      new SendVerificationEmail(
+        this.verificationTokenRepository,
+        this.emailRepository,
+        this.userRepository,
+      )
+        .execute(data.user.id)
+        .catch((error) =>
+          console.error("Error sending verification email:", error),
+        );
+
+      // Log successful registration
+      SecurityLoggerService.getInstance().logEvent(
+        data.user.id,
+        SecurityEventType.LOGIN_SUCCESS,
+        req.ip || null,
+        req.headers["user-agent"] || null,
+        { action: "registration", isFirstLogin: true },
+      );
+
+      res.json({
+        ...data,
+        verificationEmailSent: true,
+      });
+    } catch (error) {
+      this.handleError(error, res);
     }
-
-    new RegisterUser(this.authRepository, JWTAdapter.generateToken)
-      .execute(registerUserDTO!)
-      .then((data) => {
-        // Generate refresh token
-        return new GenerateRefreshToken(this.refreshTokenRepository)
-          .execute(data.user.id, req.headers["user-agent"], req.ip)
-          .then((refreshToken) => {
-            res.cookie("refresh_token", refreshToken.token, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-            });
-
-            // Send verification email
-            new SendVerificationEmail(
-              this.verificationTokenRepository,
-              this.emailRepository,
-              this.userRepository,
-            )
-              .execute(data.user.id)
-              .catch((error) =>
-                console.error("Error sending verification email:", error),
-              );
-
-            SecurityLoggerService.getInstance().logEvent(
-              data.user.id,
-              SecurityEventType.LOGIN_SUCCESS,
-              req.ip || null,
-              req.headers["user-agent"] || null,
-              { action: "registration", isFirstLogin: true },
-            );
-
-            return res.json({
-              ...data,
-              verificationEmailSent: true,
-            });
-          });
-      })
-      .catch((error) => this.handleError(error, res));
   };
 
   loginUser = async (req: Request, res: Response) => {
@@ -122,20 +135,22 @@ export class AuthController {
         req.headers["user-agent"] || null,
       );
 
-      // Record successful login
-      await BruteForceProtectionService.getInstance().recordSuccess(
-        loginUserDTO!.email,
-        data.user.id,
-        req.ip || null,
-        req.headers["user-agent"] || null,
-      );
+      const isNewDevice =
+        await DeviceManagementService.getInstance().checkDevice(
+          data.user.id,
+          req.headers["user-agent"] || null,
+          req.ip || null,
+        );
 
       SecurityLoggerService.getInstance().logEvent(
         data.user.id,
         SecurityEventType.LOGIN_SUCCESS,
         req.ip || null,
         req.headers["user-agent"] || null,
-        { action: "login" },
+        {
+          action: "login",
+          newDevice: isNewDevice,
+        },
       );
 
       res.cookie("refresh_token", refreshToken.token, {
@@ -145,7 +160,12 @@ export class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
-      res.json(data);
+      res.json({
+        ...data,
+        security: {
+          newDevice: isNewDevice,
+        },
+      });
     } catch (error) {
       if (
         error instanceof CustomError &&

@@ -18,4 +18,6 @@ export abstract class SecurityEventDataSource {
     eventType: SecurityEventType,
     limit: number,
   ): Promise<SecurityEventEntity[]>;
+
+  abstract clearOldEvents(hours: number): Promise<number>;
 }

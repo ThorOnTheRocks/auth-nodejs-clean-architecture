@@ -22,6 +22,8 @@ import { SecurityEventDataSource } from "../../features/security/domain/datasour
 import { PostgresSecurityEventDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-security-event.datasource.impl";
 import { LoginAttemptDataSource } from "../../features/security/domain/datasources/login-attempt.datasource";
 import { PostgresLoginAttemptDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-login-attempt.datasource.impl";
+import { UserDeviceDataSource } from "../../features/security/domain/datasources/user-device.datasources";
+import { PostgresUserDeviceDataSourceImpl } from "../../features/security/infrastructure/datasources/postgres-user-device.datasource.impl";
 
 export type DatabaseType = "postgres" | "mongodb";
 
@@ -139,6 +141,17 @@ export class DatabaseFactory {
       default:
         throw CustomError.internalServerError(
           `Unsupported database type: ${type} for login attempts`,
+        );
+    }
+  }
+
+  static createUserDeviceDataSource(type: DatabaseType): UserDeviceDataSource {
+    switch (type) {
+      case "postgres":
+        return new PostgresUserDeviceDataSourceImpl();
+      default:
+        throw CustomError.internalServerError(
+          `Unsupported database type: ${type} for user devices`,
         );
     }
   }

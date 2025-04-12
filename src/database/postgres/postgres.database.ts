@@ -7,6 +7,7 @@ import { PasswordResetToken } from "./models/passwordResetToken.model";
 import { EmailChangeToken } from "./models/emailChangeToken.model";
 import { SecurityEvent } from "./models/security-event.model";
 import { LoginAttempt } from "./models/login-attempt.model";
+import { UserDevice } from "./models/user-device.model";
 
 interface Options {
   host: string;
@@ -39,6 +40,7 @@ export class PostgresDatabase {
           EmailChangeToken,
           SecurityEvent,
           LoginAttempt,
+          UserDevice,
         ],
         synchronize: true,
         logging: true,
