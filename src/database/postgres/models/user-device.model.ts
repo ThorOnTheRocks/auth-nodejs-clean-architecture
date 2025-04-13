@@ -17,19 +17,19 @@ export class UserDevice {
   @Index()
   userId!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   deviceName!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   deviceType!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   browser!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   operatingSystem!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   ipAddress!: string | null;
 
   @Column()

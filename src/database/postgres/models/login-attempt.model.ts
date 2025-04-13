@@ -17,13 +17,13 @@ export class LoginAttempt {
   @Index()
   email!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   userId!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   ipAddress!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   userAgent!: string | null;
 
   @Column()

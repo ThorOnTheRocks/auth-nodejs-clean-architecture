@@ -1,167 +1,312 @@
-# Auth REST API - Clean Architecture
+# Authentication REST API Service
 
-A robust REST API server built with Node.js/Express.js following Clean Architecture principles. This project implements a secure authentication system with JWT, using MongoDB as the database with Mongoose ODM.
+A comprehensive authentication service built with Node.js, TypeScript, and Express that provides robust authentication, authorization, and security features for modern web applications.
 
-## 🏗️ Architecture Overview
+## Features
 
-This application is structured following the Clean Architecture pattern, which separates the codebase into concentric layers with dependencies pointing inward. This design promotes:
+- 🔐 **Authentication**
+  - Email/password authentication
+  - OAuth2 integration (Google, GitHub)
+  - JWT-based access tokens with refresh token rotation
+  - Multi-device session management
+- 📧 **Account Management**
+  - Email verification flow
+  - Password reset functionality
+  - Profile management
+  - Account recovery options
+- 🛡️ **Security**
+  - Brute force protection
+  - Device tracking and management
+  - Security event logging
+  - Account locking mechanisms
+  - Suspicious activity detection
+- 🔒 **Authorization**
+  - Role-based access control
+  - Permission management
+  - Admin security controls
+- 🗄️ **Database Support**
+  - PostgreSQL (primary)
+  - MongoDB (alternative)
 
-- **Separation of concerns**: Each layer has a specific responsibility
-- **Independence from frameworks**: Core business logic is isolated from external frameworks
-- **Testability**: Components can be tested in isolation
-- **Maintainability**: Changes in one layer have minimal impact on others
+## Tech Stack
 
-### 📦 Project Structure
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Databases**: PostgreSQL, MongoDB
+- **ORM/ODM**: TypeORM, Mongoose
+- **Authentication**: JWT, Passport.js
+- **Email**: Resend
+- **Docker**: Multi-container setup with docker-compose
+- **Testing**: Vitest (recommended), Supertest
 
-```
-src/
-├── config/             # Environment and configuration settings
-├── data/               # Database connection and models
-├── domain/             # Business rules and entities
-│   ├── datasources/    # Abstract interfaces for data access
-│   ├── dtos/           # Data transfer objects
-│   ├── entities/       # Enterprise business objects
-│   ├── errors/         # Custom error handling
-│   ├── repository/     # Abstract repository interfaces
-│   └── use-cases/      # Application business rules
-├── infrastructure/     # Implementation of interfaces defined in domain
-│   ├── datasources/    # Concrete implementations of data sources
-│   ├── mappers/        # Transform data between layers
-│   └── repository/     # Concrete implementations of repositories
-├── presentation/       # Controllers, routes, and middleware
-│   ├── auth/           # Authentication controllers and routes
-│   └── middlewares/    # Express middleware functions
-└── validators/         # Input validation
-```
-
-## 🔄 Layer Breakdown
-
-### 1. Domain Layer
-
-The **domain layer** is the core of the application, containing business entities and use cases independent of any external factors.
-
-- **Entities**: Core business objects (e.g., `UserEntity`)
-- **Use Cases**: Application-specific business rules
-- **DTOs (Data Transfer Objects)**: Structured objects for passing data between layers
-- **Repository Interfaces**: Abstract definitions for data access
-- **Data Source Interfaces**: Abstract sources for different types of data
-- **Custom Errors**: Specialized error handling for the domain
-
-This layer has no dependencies on external frameworks or databases and defines abstract interfaces that outer layers must implement.
-
-### 2. Infrastructure Layer
-
-The **infrastructure layer** contains concrete implementations of the interfaces defined in the domain layer.
-
-- **Data Source Implementations**: Connect to external systems (MongoDB)
-- **Repository Implementations**: Handle data persistence logic
-- **Mappers**: Transform data between domain entities and database models
-
-This layer adapts external resources to domain interfaces, making the system adaptable to different technologies.
-
-### 3. Presentation Layer
-
-The **presentation layer** handles HTTP requests, authentication, and the application's REST API endpoints.
-
-- **Controllers**: Process incoming requests and return responses
-- **Routes**: Define API endpoints and connect them to controllers
-- **Middleware**: Handle cross-cutting concerns like authentication
-- **Server**: Express.js server configuration
-
-This layer depends on the domain layer but not directly on the infrastructure implementations.
-
-### 4. Data Layer
-
-The **data layer** manages database connections and defines database models.
-
-- **Models**: Mongoose schemas for MongoDB
-- **Database Connection**: Configuration for connecting to MongoDB
-
-### 5. Config
-
-The **config layer** manages environment variables and application configuration.
-
-- **Environment Variables**: Centralized access to environment settings
-- **Authorization**: JWT and bcrypt implementations
-
-## 🔒 Authentication System
-
-The application includes a complete authentication system with:
-
-- User registration
-- User login with email/password
-- JWT-based authentication
-- Password hashing with bcrypt
-- Role-based access control
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14+)
-- MongoDB
-- Docker & Docker Compose (optional)
-
-### Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-PORT=8000
-MONGO_DB_URL_LOCAL=mongodb://localhost:27017
-MONGO_DB_NAME_LOCAL=your_database_name
-JWT_SECRET=your_jwt_secret_key
-```
+- Node.js 18+
+- PostgreSQL 14+ or MongoDB 6+
+- Docker & Docker Compose (optional, for containerized setup)
 
 ### Installation
 
-```bash
-# Clone the repository
-git clone <repository-url>
+1. Clone the repository:
 
-# Install dependencies
-npm install
+   ```bash
+   git clone https://github.com/yourusername/auth-nodejs.git
+   cd auth-nodejs
+   ```
 
-# Start the server
-npm start
+2. Install dependencies:
 
-# Start with Docker
-docker-compose up -d
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables by creating a `.env.development` file:
+
+   ```
+   # See Environment Variables section below
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Using Docker
+
+The project includes a Docker setup for easy deployment:
+
+1. Make sure Docker and Docker Compose are installed
+2. Create a `.env.development` file with your configuration
+3. Run the containers:
+   ```bash
+   docker-compose up
+   ```
+
+This will start:
+
+- The Node.js application
+- PostgreSQL database
+- MongoDB database
+- PGAdmin (PostgreSQL management tool)
+- Mongo Express (MongoDB management tool)
+
+## Environment Variables
+
+Create a `.env.development` file with the following variables:
+
+```
+# Server Configuration
+PORT=8000
+NODE_ENV=development
+
+# PostgreSQL Database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=auth_db
+POSTGRES_LOCAL_PORT=5433
+POSTGRES_HOST=postgres-db
+
+# MongoDB Database
+MONGO_DB_NAME_LOCAL=auth_db
+MONGO_USER=mongo_user
+MONGO_PASSWORD=mongo_password
+MONGO_DB_URL_LOCAL=mongodb://mongo_user:mongo_password@mongo-db:27017/auth_db?authSource=admin
+
+# JWT Configuration
+JWT_SECRET=your_secure_jwt_secret_key
+
+# Database Type
+DATABASE_TYPE=postgres  # or mongodb
+
+# OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:8000/api/oauth/google/callback
+
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:8000/api/oauth/github/callback
+
+# Email Configuration
+RESEND_API_KEY=your_resend_api_key
+EMAIL_FROM=auth@yourdomain.com
+
+# Admin Tools
+PGADMIN_EMAIL=admin@admin.com
+PGADMIN_PASSWORD=admin
+ME_USERNAME=admin
+ME_PASSWORD=admin
+
+# Application URLs
+APP_URL=http://localhost:8000
+FILE_STORAGE_URL=http://localhost:8000/uploads
 ```
 
-## 🛣️ API Routes
+## API Routes
 
 ### Authentication
 
-- **POST /api/auth/register**: Register a new user
-- **POST /api/auth/login**: Login and get JWT token
-- **GET /api/auth**: Get all users (requires authentication)
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Log in a user
+- `POST /api/auth/refresh-token` - Refresh access token
+- `POST /api/auth/logout` - Log out (current device)
+- `POST /api/auth/logout-all` - Log out from all devices
+- `POST /api/auth/change-password` - Change password
 
-## 🛠️ Built With
+### OAuth
 
-- **Express.js**: Web framework
-- **MongoDB**: Database
-- **Mongoose**: MongoDB object modeling
-- **JWT**: Authentication
-- **bcrypt**: Password hashing
-- **Docker**: Containerization
+- `GET /api/oauth/google` - Google OAuth login
+- `GET /api/oauth/github` - GitHub OAuth login
+- `GET /api/oauth/methods` - Get user's connected auth methods
+- `POST /api/oauth/link` - Link OAuth provider to account
+- `DELETE /api/oauth/unlink/:provider` - Unlink OAuth provider
 
-## 📝 Design Decisions
+### Email Verification
 
-### Why Clean Architecture?
+- `GET /api/verification/verify` - Verify email with token
+- `POST /api/verification/resend` - Resend verification email
 
-1. **Framework Independence**: The business logic isn't tied to Express.js or MongoDB, making it possible to change these technologies with minimal impact.
+### Password Reset
 
-2. **Testability**: Each component can be tested in isolation, with proper mocking of dependencies.
+- `POST /api/password-reset/request` - Request password reset
+- `GET /api/password-reset/validate` - Validate reset token
+- `POST /api/password-reset/reset` - Reset password with token
 
-3. **Maintainability**: Clearly defined boundaries between layers make the codebase easier to understand and maintain.
+### Profile Management
 
-4. **Scalability**: New features can be added without affecting existing functionality.
+- `GET /api/profile/me` - Get user profile
+- `PUT /api/profile/me` - Update user profile
+- `POST /api/profile/image` - Upload profile image
+- `GET /api/profile/image` - Get user's profile image
 
-### Authentication Flow
+### Security
 
-1. User registers or logs in through the presentation layer
-2. Request is validated using DTOs in the domain layer
-3. Use cases execute the business logic
-4. Data is persisted via repositories
-5. JWT token is generated and returned to the client
+- `GET /api/security/events/recent` - Get recent security events
+- `GET /api/security/events/type/:type` - Get events by type
+- `GET /api/security/events/user/:userId` - Get user's security events
+
+### Device Management
+
+- `GET /api/devices` - Get user's devices
+- `POST /api/devices/:deviceId/trust` - Mark device as trusted
+- `DELETE /api/devices/:deviceId` - Remove device
+
+### Admin Security
+
+- `POST /api/admin/security/users/:userId/lock` - Lock user account
+- `POST /api/admin/security/users/:userId/unlock` - Unlock user account
+- `GET /api/admin/security/users/:userId/events` - Get user's security events
+- `GET /api/admin/security/events/failed-logins` - Get failed login attempts
+
+## Project Structure
+
+The project follows a clean architecture approach with domain-driven design principles:
+
+```
+src/
+├── config/              # Configuration files
+├── database/            # Database connection and models
+├── domain/              # Domain entities and interfaces
+├── features/            # Feature modules
+│   ├── auth/            # Authentication functionality
+│   ├── email/           # Email services
+│   ├── oauth/           # OAuth integration
+│   ├── password-reset/  # Password reset flow
+│   ├── profile/         # User profile management
+│   ├── security/        # Security features
+│   ├── token/           # Token management
+│   └── verification/    # Email verification
+├── infrastructure/      # Infrastructure implementations
+├── presentation/        # Express routes and server
+├── types/               # TypeScript type definitions
+└── validators/          # Input validation
+```
+
+## Testing
+
+### Setting Up Tests
+
+1. Install Vitest (recommended) or Jest:
+
+   ```bash
+   npm install --save-dev vitest supertest
+   ```
+
+2. Create a configuration file:
+
+   ```bash
+   # For Vitest
+   touch vite.config.ts
+   ```
+
+3. Add test script to package.json:
+   ```json
+   {
+     "scripts": {
+       "test": "vitest run",
+       "test:watch": "vitest"
+     }
+   }
+   ```
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Test Structure
+
+Organize tests by feature:
+
+```
+tests/
+├── auth/
+│   ├── registration.test.ts
+│   ├── login.test.ts
+│   └── refresh-token.test.ts
+├── oauth/
+│   └── oauth-flows.test.ts
+└── setup.ts
+```
+
+## Security Features
+
+This authentication service includes multiple layers of security:
+
+1. **Brute Force Protection**:
+
+   - Account lockout after multiple failed attempts
+   - IP-based rate limiting
+   - Exponential backoff
+
+2. **Device Management**:
+
+   - Device fingerprinting
+   - New device notifications
+   - Suspicious login detection
+
+3. **Token Security**:
+
+   - Short-lived access tokens (2 hours)
+   - Refresh token rotation
+   - Secure HTTP-only cookies
+
+4. **Audit Logging**:
+   - Security event tracking
+   - Login attempt monitoring
+   - Admin security controls
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

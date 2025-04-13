@@ -1,4 +1,4 @@
-import { Repository, LessThan } from "typeorm";
+import { Repository, LessThan, MoreThan } from "typeorm";
 import { LoginAttempt } from "../../../../database/postgres/models/login-attempt.model";
 import { PostgresDatabase } from "../../../../database/postgres/postgres.database";
 import { LoginAttemptDataSource } from "../../domain/datasources/login-attempt.datasource";
@@ -122,10 +122,9 @@ export class PostgresLoginAttemptDataSourceImpl
         where: {
           email,
           success: false,
-          createdAt: LessThan(cutoffTime),
+          createdAt: MoreThan(cutoffTime),
         },
       });
-
       return result;
     } catch (error) {
       console.error("Error counting failed login attempts:", error);

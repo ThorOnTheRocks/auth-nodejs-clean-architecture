@@ -65,6 +65,7 @@ export class CheckBruteForce implements CheckBruteForceUseCase {
 
       if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
         // If the user exists, lock their account
+
         if (users.length > 0) {
           const user = users[0];
           const lockUntil = new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000);

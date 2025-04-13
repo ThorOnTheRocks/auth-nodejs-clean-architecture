@@ -34,6 +34,6 @@ export class User {
   @Column({ nullable: true, type: "timestamp" })
   lockedUntil!: Date | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   lockReason!: string | null;
 }
