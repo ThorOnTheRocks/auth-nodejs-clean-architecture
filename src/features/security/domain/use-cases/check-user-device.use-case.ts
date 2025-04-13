@@ -85,6 +85,33 @@ export class CheckUserDevice implements CheckUserDeviceUseCase {
     }
   }
 
+  async registerInitialDevice(
+    userId: string,
+    deviceInfo: DeviceInfo,
+    ipAddress: string | null,
+  ): Promise<UserDeviceEntity> {
+    try {
+      // Create the device - similar to execute method but without notification
+      const newDevice = await this.userDeviceRepository.createDevice(
+        userId,
+        deviceInfo.fingerprint,
+        deviceInfo.deviceName,
+        deviceInfo.deviceType,
+        deviceInfo.browser,
+        deviceInfo.operatingSystem,
+        ipAddress,
+      );
+
+      // Mark as trusted by default since it's the registration device
+      return await this.userDeviceRepository.trustDevice(newDevice.id);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw CustomError.internalServerError("Error registering initial device");
+    }
+  }
+
   private async sendNewDeviceEmail(
     userId: string,
     deviceInfo: DeviceInfo,

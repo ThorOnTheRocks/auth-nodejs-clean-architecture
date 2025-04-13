@@ -22,7 +22,7 @@ export class ResendAdapter {
 
   static initialize() {
     this.resend = new Resend(envs.RESEND_API_KEY);
-    this.defaultFromEmail = envs.EMAIL_FROM || "auth@yourdomain.com";
+    this.defaultFromEmail = envs.EMAIL_FROM || "auth@resend.dev";
   }
 
   static async sendEmail(
