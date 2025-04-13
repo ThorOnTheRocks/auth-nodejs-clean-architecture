@@ -70,7 +70,7 @@ export class AuthController {
       });
 
       // Register the first device (this won't send a notification since it's the first login)
-      await DeviceManagementService.getInstance().checkDevice(
+      await DeviceManagementService.getInstance().registerInitialDevice(
         data.user.id,
         req.headers["user-agent"] || null,
         req.ip || null,
