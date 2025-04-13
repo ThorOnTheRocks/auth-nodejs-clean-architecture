@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import http from "http";
 import { CookieParserAdapter } from "../config/cookie";
-import { envs } from "../config";
+import { envs, CorsAdapter } from "../config";
 import { PassportAdapter } from "../config/passport";
 import path from "path";
 import { SecurityContextMiddleware } from "../features/security/presentation/middlewares/security-context.middleware";
@@ -24,6 +24,7 @@ export class Server {
   }
 
   async start() {
+    this.app.use(CorsAdapter.configureCors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(CookieParserAdapter.parseCookie(envs.JWT_SECRET));
